@@ -8,6 +8,7 @@ function valiFormNhanVien() {
   for (var i = 0; i < arrInput.length; i++) {
     var id = arrInput[i].id;
     nhanVien[id] = arrInput[i].value;
+    checkEmpty(arrInput[i].value, id);
   }
   console.log(nhanVien);
   return nhanVien;
@@ -22,6 +23,31 @@ document.getElementById("btnThemNV").onclick = function () {
     document.getElementById("form").reset();
   }
 };
+// handle validation onblur
+function handleBlur(event) {
+  if (event.target.value == "") {
+    return checkEmpty(event.target.value, event.target.id);
+  }
+  switch (event.target.id) {
+    case "tknv":
+      checkMinMaxValue(event.target.value, event.target.id, 4, 6);
+      break;
+    case "luongCB":
+      checkMinMaxValue(event.target.value, event.target.id, 1000000, 20000000);
+      break;
+    case "gioLam":
+      checkMinMaxValue(event.target.value, event.target.id, 80, 200);
+      break;
+    case "email":
+      checkEmail(event.target.value, event.target.id);
+      break;
+    default:
+      break;
+  }
+}
+document.querySelectorAll("form input").forEach((input) => {
+  input.onblur = handleBlur;
+});
 function setLocalStorage(key, value) {
   // chuyển đổi dữ liệu về thành chuỗi JSON
   // var stringJSON = JSON.stringify(value);
@@ -56,8 +82,38 @@ function renderNhanVien(arr) {
         <td>${nhanVien.chucvu}</td>
         <td>${nhanVien.tongLuong}</td>
         <td>${nhanVien.xepLoai}</td>
-    </tr>`;
+        <td class="d-flex">
+        <button onclick="xoaNhanVien('${arrNhanVien.tknv}')" class="btn btn-danger">Xóa</button>
+        <button class="btn btn-primary" >Sửa</button>
+        </td>
+
+        </tr>`;
     content += stringHtml;
   }
   document.getElementById("tableDanhSach").innerHTML = content;
+}
+
+function timViTriIndex(tknv) {
+  var nhanVien;
+  for (let i = 0; i < arrNhanVien.length; i++) {
+    if (tknv == arrNhanVien[i].tknv) {
+      nhanVien = arrNhanVien[i];
+    }
+  }
+}
+function xoaNhanVien(tknv) {
+  var index = timViTriIndex(tknv);
+  if (index !== -1) {
+    arrNhanVien.splice(index, 1);
+  }
+  renderNhanVien();
+  setLocalStorage("arrNhanVien", arrNhanVien);
+}
+function getInfoNhanVien(tknv) {
+  var nhanVien = timViTriIndex(tknv);
+  var arrInput = document.querySelectorAll("form input, form select");
+  for (let j = 0; j < arrInput.length; j++) {
+    var id = arrInput[j].id;
+    arrInput[j].value = nhanVien[id];
+  }
 }

@@ -8,9 +8,9 @@ function NhanVien() {
   this.luongCB = "";
   this.datepicker = "";
   this.GioLam = "";
-  this.tongLuong = this.tinhLuongCoBan;
+  this.tongLuong = 0;
   this.xepLoai = "";
-  
+
   // phương thức
   this.tinhLuongCoBan = function () {
     var tongLuong = 0;
@@ -19,4 +19,5 @@ function NhanVien() {
     else tongLuong = this.Luong * 1;
     return tongLuong;
   };
+  this.tongLuong = tinhLuongCoBan();
 }

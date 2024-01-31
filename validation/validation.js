@@ -1,22 +1,44 @@
 function checkEmpty(value, idInput) {
-  var input = document.getElementById(idInput);
+  var errorMessageId =
+    "tb" + idInput.charAt(0).toUpperCase() + idInput.slice(1);
+  var input = document.getElementById(errorMessageId);
   if (value == "") {
-    input.innerHTML = "Vui lòng không bỏ trống";
-    return false;
+    input.style.display = "block";
+    input.innerText = "Vui lòng không bỏ trống";
   } else {
+    input.style.display = "none";
     input.innerHTML = "";
-    return true;
   }
 }
 function checkMinMaxValue(value, idInput, min, max) {
-  var valueLenght = value.lenght;
-  if (valueLenght >= min && valueLenght <= max) {
-    document.getElementById(idInput).innerHTML = "";
+  console.log({ idInput });
+  var errorMessageId =
+    "tb" + idInput.charAt(0).toUpperCase() + idInput.slice(1);
+  var input = document.getElementById(errorMessageId);
+  var valueLength = value.length;
+  console.log(valueLength);
+  if (valueLength >= min && valueLength <= max) {
+    input.style.display = "none";
+    input.innerHTML = "";
     return true;
   } else {
-    document.getElementById(
-      idInput
-    ).innerHTML = `vui lòng nhập tối thiểu ${min} và tối đa ${max}`;
+    input.style.display = "block";
+    input.innerHTML = `vui lòng nhập tối thiểu ${min} và tối đa ${max}`;
     return false;
   }
+}
+
+function checkEmail(value, idInput) {
+  var pattern = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+  var errorMessageId =
+    "tb" + idInput.charAt(0).toUpperCase() + idInput.slice(1);
+  var input = document.getElementById(errorMessageId);
+  if (value.match(pattern)) {
+    input.style.display = "none";
+    input.innerHTML = "";
+    return true;
+  }
+  input.style.display = "block";
+  input.innerHTML = "Email sai định dạng";
+  return false;
 }
