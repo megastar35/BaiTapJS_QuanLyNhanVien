@@ -1,4 +1,4 @@
-arrNhanVien = [];
+var arrNhanVien = [];
 function valiFormNhanVien() {
   // Thực hiện dom tới nhiều phần tử html cùng lúc
   // querySelectorAll giúp truy cập nhiều phần tử html cùng lúc
@@ -8,9 +8,11 @@ function valiFormNhanVien() {
   for (var i = 0; i < arrInput.length; i++) {
     var id = arrInput[i].id;
     nhanVien[id] = arrInput[i].value;
-    checkEmpty(arrInput[i].value, id);
+    // formValidation(arrInput[i].value, id);
   }
-  console.log(nhanVien);
+  nhanVien.tongLuong = nhanVien.tinhLuongCoBan();
+  nhanVien.xeploai = nhanVien.xeploai();
+  // console.log(nhanVien);
   return nhanVien;
 }
 document.getElementById("btnThemNV").onclick = function () {
@@ -20,34 +22,21 @@ document.getElementById("btnThemNV").onclick = function () {
     arrNhanVien.push(nhanVien);
     setLocalStorage("arrNhanVien", arrNhanVien);
     renderNhanVien(arrNhanVien);
-    document.getElementById("form").reset();
+    resetFormAndErrors();
   }
 };
 // handle validation onblur
-function handleBlur(event) {
-  if (event.target.value == "") {
-    return checkEmpty(event.target.value, event.target.id);
-  }
-  switch (event.target.id) {
-    case "tknv":
-      checkMinMaxValue(event.target.value, event.target.id, 4, 6);
-      break;
-    case "luongCB":
-      checkMinMaxValue(event.target.value, event.target.id, 1000000, 20000000);
-      break;
-    case "gioLam":
-      checkMinMaxValue(event.target.value, event.target.id, 80, 200);
-      break;
-    case "email":
-      checkEmail(event.target.value, event.target.id);
-      break;
-    default:
-      break;
-  }
-}
-document.querySelectorAll("form input").forEach((input) => {
-  input.onblur = handleBlur;
-});
+// function handleBlur(event) {
+//   var isValidForm = formValidation(event.target.value, event.target.id);
+//   if (isValidForm) {
+//     document.getElementById("btnThemNV").disabled = false;
+//   } else {
+//     document.getElementById("btnThemNV").disabled = true;
+//   }
+// }
+// document.querySelectorAll("form input").forEach((input) => {
+//   input.onblur = handleBlur;
+// });
 function setLocalStorage(key, value) {
   // chuyển đổi dữ liệu về thành chuỗi JSON
   // var stringJSON = JSON.stringify(value);
@@ -76,17 +65,16 @@ function renderNhanVien(arr) {
     var stringHtml = `
     <tr>
         <td>${nhanVien.tknv}</td>
-        <td>${nhanVien.name}</td>
+        <td>${nhanVien.ten}</td>
         <td>${nhanVien.email}</td>
-        <td>${nhanVien.datepicker}</td>
+        <td>${nhanVien.ngay}</td>
         <td>${nhanVien.chucvu}</td>
         <td>${nhanVien.tongLuong}</td>
-        <td>${nhanVien.xepLoai}</td>
+        <td>${nhanVien.xeploai}</td>
         <td class="d-flex">
-        <button onclick="xoaNhanVien('${arrNhanVien.tknv}')" class="btn btn-danger">Xóa</button>
+        <button onclick="xoaNhanVien('${nhanVien.tknv}')" class="btn btn-danger">Xóa</button>
         <button class="btn btn-primary" >Sửa</button>
         </td>
-
         </tr>`;
     content += stringHtml;
   }
@@ -97,14 +85,18 @@ function timViTriIndex(tknv) {
   var nhanVien;
   for (let i = 0; i < arrNhanVien.length; i++) {
     if (tknv == arrNhanVien[i].tknv) {
-      nhanVien = arrNhanVien[i];
+      nhanVien = arrNhanVien[i].tknv;
+      console.log(nhanVien);
+      return nhanVien;
     }
   }
 }
 function xoaNhanVien(tknv) {
-  var index = timViTriIndex(tknv);
-  if (index !== -1) {
-    arrNhanVien.splice(index, 1);
+  // var index = timViTriIndex(tknv);
+  for (let i = 0; i < arrNhanVien.length; i++) {
+    if (tknv == arrNhanVien[i].tknv) {
+      arrNhanVien.splice(i, 1);
+    }
   }
   renderNhanVien();
   setLocalStorage("arrNhanVien", arrNhanVien);
@@ -117,3 +109,7 @@ function getInfoNhanVien(tknv) {
     arrInput[j].value = nhanVien[id];
   }
 }
+document.getElementById("btnDong").onclick = function () {
+  resetFormAndErrors();
+};
+console.log(arrNhanVien);
