@@ -8,13 +8,36 @@ function valiFormNhanVien() {
   for (var i = 0; i < arrInput.length; i++) {
     var id = arrInput[i].id;
     nhanVien[id] = arrInput[i].value;
-    // formValidation(arrInput[i].value, id);
+    formValidation(arrInput[i].value, id);
   }
   nhanVien.tongLuong = nhanVien.tinhLuongCoBan();
   nhanVien.xeploai = nhanVien.xeploai();
-  // console.log(nhanVien);
   return nhanVien;
 }
+function handleEditNV() {
+  var index = arrNhanVien.findIndex(
+    (emp) => emp.tknv === document.getElementById("tknv").value
+  );
+  if (index !== -1) {
+    var updateNV = new NhanVien();
+    var arrInput = document.querySelectorAll("form input, form select");
+    for (var i = 0; i < arrInput.length; i++) {
+      var id = arrInput[i].id;
+      formValidation(arrInput[i].value, id);
+      updateNV[id] = arrInput[i].value;
+    }
+    updateNV.tongLuong = updateNV.tinhLuongCoBan();
+    updateNV.xeploai = updateNV.xeploai();
+    arrNhanVien[index] = updateNV;
+  }
+  renderNhanVien(arrNhanVien);
+  setLocalStorage("arrNhanVien", arrNhanVien);
+  resetFormAndErrors();
+}
+document.getElementById("btnThem").onclick = function () {
+  document.getElementById("btnCapNhat").style.display = "none";
+  document.getElementById("btnThemNV").style.display = "block";
+};
 document.getElementById("btnThemNV").onclick = function () {
   var nhanVien = valiFormNhanVien();
 
@@ -25,18 +48,19 @@ document.getElementById("btnThemNV").onclick = function () {
     resetFormAndErrors();
   }
 };
-// handle validation onblur
-// function handleBlur(event) {
-//   var isValidForm = formValidation(event.target.value, event.target.id);
-//   if (isValidForm) {
-//     document.getElementById("btnThemNV").disabled = false;
-//   } else {
-//     document.getElementById("btnThemNV").disabled = true;
-//   }
-// }
-// document.querySelectorAll("form input").forEach((input) => {
-//   input.onblur = handleBlur;
-// });
+document.getElementById("btnCapNhat").onclick = handleEditNV;
+/*  handle validation onblur */
+function handleBlur(event) {
+  var isValidForm = formValidation(event.target.value, event.target.id);
+  if (isValidForm) {
+    document.getElementById("btnThemNV").disabled = false;
+  } else {
+    document.getElementById("btnThemNV").disabled = true;
+  }
+}
+document.querySelectorAll("form input").forEach((input) => {
+  input.onblur = handleBlur;
+});
 function setLocalStorage(key, value) {
   // chuyển đổi dữ liệu về thành chuỗi JSON
   // var stringJSON = JSON.stringify(value);
@@ -73,7 +97,7 @@ function renderNhanVien(arr) {
         <td>${nhanVien.xeploai}</td>
         <td class="d-flex">
         <button onclick="xoaNhanVien('${nhanVien.tknv}')" class="btn btn-danger">Xóa</button>
-        <button class="btn btn-primary" >Sửa</button>
+        <button onclick="fillNhanVienForm('${nhanVien.tknv}')"class="btn btn-primary" >Sửa</button>
         </td>
         </tr>`;
     content += stringHtml;
@@ -101,15 +125,43 @@ function xoaNhanVien(tknv) {
   renderNhanVien();
   setLocalStorage("arrNhanVien", arrNhanVien);
 }
-function getInfoNhanVien(tknv) {
-  var nhanVien = timViTriIndex(tknv);
+// function getInfoNhanVien(tknv) {
+//   var nhanVien = timViTriIndex(tknv);
+//   var arrInput = document.querySelectorAll("form input, form select");
+//   for (let j = 0; j < arrInput.length; j++) {
+//     var id = arrInput[j].id;
+//     arrInput[j].value = nhanVien[id];
+//   }
+// }
+function fillNhanVienForm(tknv) {
+  document.getElementById("btnThem").click();
+  document.getElementById("btnThemNV").style.display = "none";
+  document.getElementById("btnCapNhat").style.display = "block";
+  document.getElementById("tknv").disabled = true;
   var arrInput = document.querySelectorAll("form input, form select");
-  for (let j = 0; j < arrInput.length; j++) {
-    var id = arrInput[j].id;
-    arrInput[j].value = nhanVien[id];
+  for (i = 0; i < arrNhanVien.length; i++) {
+    if (arrNhanVien[i].tknv === tknv) {
+      for (j = 0; j < arrInput.length; j++) {
+        var id = arrInput[j].id;
+        arrInput[j].value = arrNhanVien[i][id];
+      }
+    }
   }
+}
+function findEmployeeRank(input) {
+  return arrNhanVien.filter((nhanVien) =>
+    nhanVien.xeploai.includes(input.trim().toLowerCase())
+  );
 }
 document.getElementById("btnDong").onclick = function () {
   resetFormAndErrors();
+};
+document.getElementById("searchName").onchange = function () {
+  if (this.value != "") {
+    filteredNhanVien = findEmployeeRank(this.value);
+    renderNhanVien(filteredNhanVien);
+  } else {
+    renderNhanVien(arrNhanVien);
+  }
 };
 console.log(arrNhanVien);

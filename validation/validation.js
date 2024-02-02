@@ -160,7 +160,7 @@ function formValidation(value, idInput) {
 
 function resetFormAndErrors() {
   var form = document.querySelector("form");
-
+  document.getElementById("tknv").disabled = false;
   form.reset();
 
   var errorMessages = document.querySelectorAll(".sp-thongbao");
